@@ -24,28 +24,93 @@
 
 ## 🏗️ 架构
 
+### 模块分层
+
+```mermaid
+graph TB
+    subgraph FRONTEND["🎨 表现层"]
+        VUE["Vue 3 + Vite<br/>SSE 流式 / REST API"]
+    end
+
+    subgraph BOOTSTRAP["🚀 启动层"]
+        APP["platform-bootstrap<br/>Spring Boot 3.5 · 统一入口"]
+    end
+
+    subgraph BUSINESS["📦 业务层"]
+        direction LR
+        APMT["module-appointment<br/>智能对话 · Tool Calling"]
+        CG["module-codegen<br/>代码生成 · 流式 SSE"]
+        RAG["platform-rag<br/>文档解析 · Embedding · 向量检索"]
+        WF["platform-workflow<br/>LangGraph4j 工作流"]
+    end
+
+    subgraph CORE["🧠 AI 核心层"]
+        AI["platform-ai-core<br/>LangChain4j · DeepSeek<br/>ChatMemory · Prototype 作用域"]
+    end
+
+    subgraph INFRA["⚙️ 基础设施层"]
+        direction LR
+        CACHE["platform-cache<br/>Caffeine L1 · Redis L2"]
+        INF["platform-infra<br/>MyBatis-Plus · Redis"]
+        COM["platform-common<br/>API 定义 · 异常 · 常量"]
+    end
+
+    subgraph DATA["💾 数据层"]
+        direction LR
+        MYSQL[("MySQL 8.0<br/>业务数据")]
+        REDIS[("Redis 7<br/>会话 · 缓存 · 向量")]
+    end
+
+    VUE --> APP
+    APP --> APMT
+    APP --> CG
+    APMT --> RAG
+    CG --> WF
+    APMT & CG & RAG & WF --> AI
+    AI & APMT --> CACHE
+    AI & CG --> INF
+    CACHE --> COM
+    INF --> COM
+    INF --> MYSQL
+    INF --> REDIS
+    CACHE --> REDIS
 ```
-┌─────────────────────────────────────────────┐
-│                 Frontend (Vue 3)              │
-│           SSE 流式 / REST API 交互             │
-└────────────────────┬────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────┐
-│          platform-bootstrap (启动入口)          │
-│   ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│   │ module-  │  │ module-  │  │ platform-│  │
-│   │appointment│  │codegen  │  │  rag     │  │
-│   └─────┬────┘  └────┬────┘  └────┬─────┘  │
-│         │            │            │         │
-│   ┌─────▼────────────▼────────────▼─────┐   │
-│   │       platform-ai-core              │   │
-│   │  LangChain4j / DeepSeek / Memory    │   │
-│   └────────────────┬───────────────────┘   │
-│   ┌────────────────▼───────────────────┐   │
-│   │  platform-infra / platform-cache   │   │
-│   │  MyBatis-Plus / Redis / Caffeine   │   │
-│   └────────────────────────────────────┘   │
-└─────────────────────────────────────────────┘
+
+### 请求链路
+
+```mermaid
+sequenceDiagram
+    actor User as 👤 用户
+    participant V as Vue 前端
+    participant C as Controller
+    participant AI as AI Core<br/>(LangChain4j)
+    participant RAG as RAG 引擎
+    participant LLM as DeepSeek API
+    participant DB as MySQL
+
+    User->>V: 发送消息
+    V->>C: POST/GET (SSE)
+    C->>AI: 构建 Prompt + 加载记忆
+
+    alt 需要文档检索
+        AI->>RAG: 语义搜索
+        RAG-->>AI: 相关文档片段
+    end
+
+    AI->>LLM: 调用 DeepSeek (含 Tools)
+    LLM-->>AI: 流式返回 / Tool Call
+
+    alt Tool Calling 触发
+        AI->>DB: 查询/写入业务数据
+        DB-->>AI: 结果
+        AI->>LLM: 回传 Tool 结果
+        LLM-->>AI: 最终回答
+    end
+
+    AI->>AI: 保存会话记忆
+    AI-->>C: 流式推送 Token
+    C-->>V: SSE 事件流
+    V-->>User: 🌊 打字机效果展示
 ```
 
 ## 🚀 快速启动
