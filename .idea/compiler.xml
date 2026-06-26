@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for 代码工匠" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/3.5.0/spring-boot-configuration-processor-3.5.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/3.5.0/spring-boot-configuration-processor-3.5.0.jar" />
+        </processorPath>
+        <module name="platform-ai-core" />
+        <module name="platform-workflow" />
+        <module name="platform-bootstrap" />
+        <module name="module-appointment" />
+        <module name="platform-infra" />
+        <module name="platform-common" />
+        <module name="platform-rag" />
+        <module name="module-codegen" />
+        <module name="platform-cache" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="module-appointment" options="-parameters" />
+      <module name="module-codegen" options="-parameters" />
+      <module name="platform-ai-core" options="-parameters" />
+      <module name="platform-bootstrap" options="-parameters" />
+      <module name="platform-cache" options="-parameters" />
+      <module name="platform-common" options="-parameters" />
+      <module name="platform-infra" options="-parameters" />
+      <module name="platform-rag" options="-parameters" />
+      <module name="platform-workflow" options="-parameters" />
+    </option>
+  </component>
+</project>

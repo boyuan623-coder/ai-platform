@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/module-appointment/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/module-appointment/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/module-codegen/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/module-codegen/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-ai-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-ai-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-bootstrap/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-bootstrap/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-cache/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-cache/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-infra/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-infra/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-rag/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-rag/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-workflow/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/platform-workflow/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
