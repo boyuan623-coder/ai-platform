@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AppScopedChatMemoryStore implements ChatMemoryStore {
 
-    private static final long TTL_DAYS = 7;
+    private static final long TTL_DAYS = 30;
 
     private final StringRedisTemplate redisTemplate;
 

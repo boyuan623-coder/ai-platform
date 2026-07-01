@@ -1,0 +1,48 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/ai_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+dubbo:
+  registry:
+    address: nacos://nacos:8848
+
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${DEEPSEEK_API_KEY:your-deepseek-api-key-here}
+    streaming-chat-model:
+      api-key: ${DEEPSEEK_API_KEY:your-deepseek-api-key-here}
+  community:
+    redis:
+      host: redis
+      port: 6379
+
+app:
+  storage:
+    base-path: /app/data
+  cos:
+    enabled: ${COS_ENABLED:false}
+    endpoint: ${COS_ENDPOINT:}
+    region: ${COS_REGION:ap-guangzhou}
+    bucket: ${COS_BUCKET:}
+    access-key: ${COS_ACCESS_KEY:}
+    secret-key: ${COS_SECRET_KEY:}
+    public-url-prefix: ${COS_PUBLIC_URL:}
+  selenium:
+    enabled: ${SELENIUM_ENABLED:false}
+    preview-base-url: http://platform-gateway:8080
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://zipkin:9411/api/v2/spans}

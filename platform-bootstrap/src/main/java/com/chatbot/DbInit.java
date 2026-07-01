@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * 一键初始化 volunteer 库、表和示例数据。
+ * 一键初始化 ai_platform 库、表和示例数据。
  * 在 IDEA 中直接运行此类即可（无需 mysql 命令行）。
  */
 public class DbInit {
@@ -21,9 +21,7 @@ public class DbInit {
     private static final String USER = System.getenv().getOrDefault("MYSQL_USER", "root");
     private static final String[] PASSWORD_CANDIDATES = {
             System.getenv("MYSQL_PASSWORD"),
-            "root",
-            "",
-            "123456"
+            ""
     };
 
     public static void main(String[] args) throws Exception {
@@ -73,7 +71,7 @@ public class DbInit {
         }
 
         String verifyUrl = "jdbc:mysql://" + host + ":" + PORT
-                + "/volunteer?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+                + "/ai_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai"
                 + "&allowPublicKeyRetrieval=true&useSSL=false";
 
         try (Connection conn = DriverManager.getConnection(verifyUrl, props);

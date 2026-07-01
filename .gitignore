@@ -2,19 +2,19 @@ target/
 out/
 node_modules/
 dist/
+*.class
 *.iml
 .classpath
 .project
 .settings/
 .DS_Store
 *.log
-*.rdb
 dump.rdb
+data/
 
-# 环境变量文件（避免泄露 API Key）
+# 本地 API Key 等私密配置
+**/application-secrets.yml
 .env
-.env.local
-.env.*.local
 
 # IDEA：保留共享配置，忽略个人设置
 .idea/*

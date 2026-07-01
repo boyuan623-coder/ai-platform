@@ -11,7 +11,11 @@ public class CodeGenState extends AgentState {
     static final Map<String, Channel<?>> SCHEMA = Map.of(
             "requirement", Channels.base(() -> ""),
             "analysis", Channels.base(() -> ""),
+            "plan", Channels.base(() -> ""),
             "generatedCode", Channels.base(() -> ""),
+            "reviewNotes", Channels.base(() -> ""),
+            "validationPassed", Channels.base(() -> "false"),
+            "retryCount", Channels.base(() -> 0),
             "optimizedCode", Channels.base(() -> ""),
             "phase", Channels.base(() -> "INIT")
     );
@@ -28,8 +32,24 @@ public class CodeGenState extends AgentState {
         return this.<String>value("analysis").orElse("");
     }
 
+    public String plan() {
+        return this.<String>value("plan").orElse("");
+    }
+
     public String generatedCode() {
         return this.<String>value("generatedCode").orElse("");
+    }
+
+    public String reviewNotes() {
+        return this.<String>value("reviewNotes").orElse("");
+    }
+
+    public boolean validationPassed() {
+        return "true".equalsIgnoreCase(this.<String>value("validationPassed").orElse("false"));
+    }
+
+    public int retryCount() {
+        return this.<Integer>value("retryCount").orElse(0);
     }
 
     public String optimizedCode() {

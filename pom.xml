@@ -8,19 +8,31 @@
     <artifactId>ai-platform</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>代码工匠</name>
-    <description>代码工匠：RAG 智能助手 + 代码生成工作流</description>
+    <name>AI 零代码平台</name>
+    <description>AI 零代码应用生成平台：LangChain4j + LangGraph4j + 微服务</description>
 
     <modules>
+        <!-- 平台层 -->
         <module>platform-common</module>
+        <module>platform-api</module>
         <module>platform-infra</module>
         <module>platform-cache</module>
         <module>platform-ai-core</module>
         <module>platform-rag</module>
         <module>platform-workflow</module>
+        <!-- 业务模块 -->
+        <module>module-user</module>
+        <module>module-app</module>
+        <module>module-chat</module>
         <module>module-appointment</module>
         <module>module-codegen</module>
+        <!-- 启动入口 -->
         <module>platform-bootstrap</module>
+        <!-- 微服务（Phase 2） -->
+        <module>platform-gateway</module>
+        <module>service-user</module>
+        <module>service-appointment</module>
+        <module>service-codegen</module>
     </modules>
 
     <properties>
@@ -34,6 +46,10 @@
         <langgraph4j.version>1.8.19</langgraph4j.version>
         <mybatis-plus.version>3.5.9</mybatis-plus.version>
         <caffeine.version>3.1.8</caffeine.version>
+        <spring-cloud.version>2024.0.1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
+        <dubbo.version>3.3.2</dubbo.version>
+        <hutool.version>5.8.34</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -54,10 +70,31 @@
                 <scope>import</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- 内部模块 -->
             <dependency>
                 <groupId>com.chatbot</groupId>
                 <artifactId>platform-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.chatbot</groupId>
+                <artifactId>platform-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -94,6 +131,38 @@
                 <groupId>com.chatbot</groupId>
                 <artifactId>module-codegen</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.chatbot</groupId>
+                <artifactId>module-user</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.chatbot</groupId>
+                <artifactId>module-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.chatbot</groupId>
+                <artifactId>module-chat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-registry-nacos</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
             <!-- LangChain4j（显式版本，避免 BOM 在部分镜像未同步） -->
@@ -143,6 +212,13 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.11.4</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

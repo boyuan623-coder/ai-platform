@@ -18,14 +18,14 @@ public class AppointmentTools {
 
     private final AppointmentService appointmentService;
 
-    @Tool("为用户创建服务预约订单，当用户明确要求预约时调用")
+    @Tool("为用户创建志愿者服务预约订单")
     public String createAppointment(String userName, String phone, String serviceType, String appointmentTime) {
         LocalDateTime time = LocalDateTime.parse(appointmentTime, FORMATTER);
         AppointmentOrder order = appointmentService.create(userName, phone, serviceType, time);
         return "预约成功，订单号：" + order.getId() + "，服务：" + serviceType + "，时间：" + appointmentTime;
     }
 
-    @Tool("根据手机号查询用户的预约记录，当用户明确要求查询预约时调用")
+    @Tool("根据手机号查询用户的预约记录")
     public String queryAppointments(String phone) {
         var orders = appointmentService.listByPhone(phone);
         if (orders.isEmpty()) {

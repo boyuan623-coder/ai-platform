@@ -1,0 +1,83 @@
+server:
+  port: 8080    # 与原单体一致的端口，前端无需改动
+
+spring:
+  application:
+    name: platform-gateway
+  threads:
+    virtual:
+      enabled: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # === User / App / Chat 平台服务 ===
+        - id: service-user
+          uri: lb://service-user
+          predicates:
+            - Path=/api/user/**,/api/app/**,/api/chat/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
+        # === Appointment 智能对话服务 ===
+        - id: service-appointment
+          uri: lb://service-appointment
+          predicates:
+            - Path=/api/appointment/**,/api/assistant/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
+        # === CodeGen 代码生成服务 ===
+        - id: service-codegen
+          uri: lb://service-codegen
+          predicates:
+            - Path=/api/codegen/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
+      # SSE 长连接关键配置
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 300s    # 5 分钟，确保 SSE 流不超时
+        pool:
+          type: elastic
+          max-idle-time: 60s
+
+      # Gateway 全局 CORS（与 CorsConfig 配合）
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+            allowCredentials: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://localhost:9411/api/v2/spans}
+
+logging:
+  level:
+    com.chatbot.gateway: INFO
+    org.springframework.cloud.gateway: INFO

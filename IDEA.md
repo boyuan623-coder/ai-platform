@@ -5,21 +5,21 @@
 | 工具 | 版本 |
 |------|------|
 | IntelliJ IDEA | 2023.3+（推荐 Ultimate，Community 也可） |
-| JDK | 21（`C:\Program Files\Java\jdk-21.0.11`） |
+| JDK | 21 |
 | Maven | IDEA 内置或 3.9+ |
 | 插件 | **Lombok**（Settings → Plugins 搜索安装） |
 
 ## 2. 导入项目
 
 1. 打开 IDEA → **File → Open**
-2. 选择 `f:\java\chatbot\pom.xml`（选根目录 pom，不要只开子模块）
+2. 选择项目根目录下的 `pom.xml`（选根目录 pom，不要只开子模块）
 3. 选择 **Open as Project**
 4. 等待 Maven 依赖下载完成（右下角进度条）
 
 ## 3. 配置 JDK 21
 
 1. **File → Project Structure → Project**
-2. SDK 选择 **21**（若无则 Add SDK → 选 `C:\Program Files\Java\jdk-21.0.11`）
+2. SDK 选择 **21**（若无则 Add SDK → 选择你的 JDK 21 安装路径）
 3. Language level 选 **21**
 
 ## 4. 启用 Lombok
@@ -31,12 +31,9 @@
 
 **方式一（推荐）：IDEA 运行 DbInit**
 
-1. 确认 MySQL80 服务已启动（`services.msc` → MySQL80 → 运行中）
+1. 确认 MySQL 服务已启动
 2. 右上角运行配置选 **DbInit** → 运行
-3. 若 root 密码不是 `root`，在运行配置 Environment variables 加：
-   ```
-   MYSQL_PASSWORD=你的密码
-   ```
+3. 通过环境变量 `MYSQL_PASSWORD` 设置 root 密码
 
 **方式二：命令行脚本**
 
@@ -44,10 +41,15 @@
 scripts\init-mysql.bat
 ```
 
+或带密码：
+```bat
+set MYSQL_PASSWORD=你的密码
+scripts\init-mysql.bat
+```
+
 将自动创建：
-- 数据库 `volunteer`
-- 表 `appointment_order`
-- 6 条示例预约数据
+- 数据库 `ai_platform`
+- 表结构和示例数据
 
 ## 6. 运行项目
 
@@ -65,7 +67,7 @@ scripts\init-mysql.bat
 
 ## 7. Maven 面板
 
-IDEA 右侧 **Maven** 面板可看到 9 个子模块：
+IDEA 右侧 **Maven** 面板可看到多个子模块：
 
 ```
 ai-platform
@@ -100,8 +102,8 @@ ai-platform
 
 **Q: 运行报 MySQL / Redis 连接失败**
 → 先启动本地服务：
-  - Redis：双击 `scripts\start-redis.bat`（使用 `F:\Redis-x64-3.2.100`）
-  - MySQL：创建 `volunteer` 库并执行 `platform-bootstrap/src/main/resources/db/schema.sql`
+  - Redis：设置 `REDIS_HOME` 环境变量后双击 `scripts\start-redis.bat`
+  - MySQL：创建数据库并执行 `platform-bootstrap/src/main/resources/db/schema.sql`
 → 或修改 `application-local.yml` 中的连接信息
 
 **Q: Redis 3.2 能否用于 RAG 向量库？**

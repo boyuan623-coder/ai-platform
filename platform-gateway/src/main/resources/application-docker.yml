@@ -1,0 +1,6 @@
+# Docker profile: 容器内使用服务名访问
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848

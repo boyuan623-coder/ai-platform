@@ -1,6 +1,6 @@
 package com.chatbot.appointment.config;
 
-import com.chatbot.appointment.ai.ChatAssistant;
+import com.chatbot.appointment.ai.PlatformAssistant;
 import com.chatbot.appointment.tool.AppointmentTools;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
@@ -14,18 +14,18 @@ import org.springframework.context.annotation.Configuration;
 public class AppointmentAiConfig {
 
     @Bean
-    public ChatAssistant chatAssistant(
+    public PlatformAssistant platformAssistant(
             ChatModel chatModel,
             StreamingChatModel streamingChatModel,
             ChatMemoryProvider chatMemoryProvider,
             ContentRetriever contentRetriever,
             AppointmentTools appointmentTools) {
 
-        return AiServices.builder(ChatAssistant.class)
+        return AiServices.builder(PlatformAssistant.class)
                 .chatModel(chatModel)
                 .streamingChatModel(streamingChatModel)
                 .chatMemoryProvider(memoryId ->
-                        chatMemoryProvider.get("chat:" + memoryId))
+                        chatMemoryProvider.get("appointment:" + memoryId))
                 .contentRetriever(contentRetriever)
                 .tools(appointmentTools)
                 .build();

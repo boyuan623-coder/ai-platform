@@ -1,25 +1,46 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { getStoredUser } from '@/utils/auth'
+import type { UserVO } from '@/types/api'
+
+const route = useRoute()
+const user = getStoredUser<UserVO>()
+const isAdmin = computed(() => user?.role === 'ADMIN')
+const showShell = computed(() =>
+  route.name !== 'login' && route.name !== 'visual-edit' && route.name !== 'app-chat',
+)
 </script>
 
 <template>
-  <div class="layout">
+  <div v-if="!showShell" class="full">
+    <RouterView />
+  </div>
+  <div v-else class="layout">
     <aside class="sidebar">
       <div class="brand">
         <span class="brand-icon">◆</span>
         <div>
-          <h1>代码工匠</h1>
-          <p>智能对话 · 代码生成</p>
+          <h1>AI 零代码平台</h1>
+          <p>智能生成 · 应用管理 · 微服务架构</p>
         </div>
       </div>
       <nav>
+        <RouterLink to="/apps" class="nav-item">
+          <span class="nav-icon">📦</span>
+          我的应用
+        </RouterLink>
         <RouterLink to="/appointment" class="nav-item">
           <span class="nav-icon">💬</span>
-          智能对话
+          智能助手
         </RouterLink>
         <RouterLink to="/codegen" class="nav-item">
           <span class="nav-icon">⚡</span>
           代码生成
+        </RouterLink>
+        <RouterLink v-if="isAdmin" to="/admin" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          管理后台
         </RouterLink>
       </nav>
       <footer class="sidebar-footer">
@@ -28,12 +49,23 @@ import { RouterLink, RouterView } from 'vue-router'
       </footer>
     </aside>
     <main class="main">
-      <RouterView />
+      <RouterView v-slot="{ Component, route }">
+        <KeepAlive :include="['AppointmentView', 'CodeGenView']">
+          <component
+            :is="Component"
+            :key="route.name === 'appointment' || route.name === 'codegen' ? String(route.name) : route.fullPath"
+          />
+        </KeepAlive>
+      </RouterView>
     </main>
   </div>
 </template>
 
 <style scoped>
+.full {
+  height: 100%;
+}
+
 .layout {
   display: flex;
   height: 100%;

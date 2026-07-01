@@ -16,7 +16,7 @@ npm run dev
 
 | 路由 | 功能 |
 |------|------|
-| `/appointment` | 代码工匠智能对话（通用问答 + RAG + Tool + 流式） |
+| `/appointment` | 代码工匠智能助手（RAG + Tool + 流式对话） |
 | `/codegen` | AI 代码生成（LangGraph4j 工作流 + 流式输出） |
 
 ## 技术栈

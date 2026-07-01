@@ -15,4 +15,8 @@ public final class CacheKeys {
     public static String chatMemory(String appId, String sessionId) {
         return CHAT_MEMORY_PREFIX + appId + ":" + sessionId;
     }
+
+    public static String userToken(String token) {
+        return "user:token:" + token;
+    }
 }

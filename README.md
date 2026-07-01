@@ -1,6 +1,6 @@
-# 🛠️ 代码工匠 (Code Craftsman)
+# 🛠️ AI 零代码应用生成平台
 
-> RAG 智能助手 + 代码生成工作流 — 基于 LangChain4j 与 Spring Boot 3 的模块化 AI 平台
+> 对齐编程导航 yu-ai-code-mother 架构 — LangChain4j + LangGraph4j + 微服务 AI 平台
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen)](https://spring.io/projects/spring-boot)
@@ -13,12 +13,13 @@
 
 | 模块 | 能力 |
 |------|------|
-| 🤖 **智能对话** | 通用问答 + RAG 文档检索 + Tool Calling 预约 |
-| 🧠 **RAG 检索增强** | PDF/文档 Embedding → 向量相似度搜索 → 精准回答 |
-| 📝 **代码生成** | LangGraph4j 工作流引擎，分阶段流式 SSE 输出 |
-| 🔄 **流式交互** | 实时 Token 级别流式推送，打字机效果 |
-| 💾 **多级缓存** | Caffeine L1 + Redis L2，会话记忆持久化 |
-| 🗄️ **工具调用** | AI 自动识别意图 → 调用预约 Tool → 写入数据库 |
+| 👤 **用户系统** | 注册/登录/Redis Session/权限 |
+| 📦 **应用管理** | 创建/编辑/删除/精选应用 |
+| 💬 **对话历史** | MySQL 持久化 + 游标分页 |
+| 🤖 **智能对话** | RAG 文档检索 + Tool Calling 预约 |
+| 📝 **代码生成** | LangGraph4j 工作流 + 流式 SSE |
+| 🔄 **流式交互** | 实时 Token 级别流式推送 |
+| 💾 **多级缓存** | Caffeine L1 + Redis L2 |
 
 ---
 
@@ -168,6 +169,14 @@ npm run dev
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| `POST` | `/api/user/register` | 用户注册 |
+| `POST` | `/api/user/login` | 用户登录 |
+| `GET` | `/api/user/me` | 当前用户 |
+| `POST` | `/api/app` | 创建应用 |
+| `GET` | `/api/app/mine` | 我的应用列表 |
+| `GET` | `/api/app/featured` | 精选应用 |
+| `POST` | `/api/chat/message` | 保存对话消息 |
+| `GET` | `/api/chat/history` | 游标分页历史 |
 | `POST` | `/api/appointment/chat` | 同步对话 + RAG + Tool |
 | `GET` | `/api/appointment/chat/stream` | 流式对话 + RAG + Tool |
 | `POST` | `/api/codegen/generate` | 代码生成工作流 |
@@ -183,14 +192,20 @@ ai-platform/
 ├── platform-common        # 公共 API、常量、异常
 ├── platform-infra         # MyBatis-Plus、Redis 基础设施
 ├── platform-cache         # Caffeine + Redis 多级缓存
-├── platform-ai-core       # LangChain4j 核心（模型、记忆、作用域）
-├── platform-rag           # Easy RAG（Embedding → 向量检索）
-├── platform-workflow      # LangGraph4j 工作流引擎
-├── module-appointment     # 智能对话 + 预约 Tool Calling
-├── module-codegen         # 代码生成 + 流式 SSE
-├── platform-bootstrap     # 统一启动入口（模块化单体）
-├── frontend               # Vue 3 + Vite 前端
-├── scripts                # 辅助脚本
+├── platform-ai-core       # LangChain4j 核心
+├── platform-rag           # Easy RAG
+├── platform-workflow      # LangGraph4j 工作流
+├── module-user            # 用户模块
+├── module-app             # 应用模块
+├── module-chat            # 对话历史模块
+├── module-appointment     # 智能对话 + Tool Calling
+├── module-codegen         # 代码生成 + SSE
+├── platform-bootstrap     # Phase 1 单体启动
+├── platform-gateway       # Phase 2 Gateway
+├── service-user           # 用户/应用/对话微服务
+├── service-appointment    # 对话微服务
+├── service-codegen        # 代码生成微服务
+├── frontend               # Vue 3 前端
 └── docs                   # 文档
 ```
 
@@ -221,9 +236,11 @@ ai-platform/
 
 ## 📋 演进路线
 
-- [x] Phase 1 — 模块化单体
-- [ ] Phase 2 — 微服务拆分（Nacos + Gateway + Dubbo）
-- [ ] Phase 3 — Docker 一键部署 + 全生命周期监控
+- [x] Phase 1 — 模块化单体（用户/应用/对话/AI 生成）
+- [x] Phase 2 — 微服务骨架（Nacos + Gateway + 3 服务）
+- [ ] Phase 3 — 可视化编辑、一键部署、Prometheus 监控
+
+测试账号请参见 `platform-bootstrap/src/main/resources/db/init.sql` 中的种子数据
 
 ---
 

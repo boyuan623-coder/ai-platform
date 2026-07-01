@@ -20,7 +20,19 @@
         </dependency>
         <dependency>
             <groupId>com.chatbot</groupId>
+            <artifactId>platform-ai-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.chatbot</groupId>
             <artifactId>platform-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.chatbot</groupId>
+            <artifactId>module-user</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

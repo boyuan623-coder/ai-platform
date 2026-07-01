@@ -34,13 +34,14 @@ public class CodeRunService {
                 ? detectLanguage(code)
                 : language.toLowerCase();
 
+        if ("java".equals(lang) || "python".equals(lang) || "py".equals(lang) || "javascript".equals(lang) || "js".equals(lang)) {
+            throw new BusinessException("出于安全考虑，Java/Python/JS 请在本地 IDE 或浏览器中运行，服务端仅支持 HTML 预览提示");
+        }
+
         long start = System.currentTimeMillis();
         CodeRunResult result = switch (lang) {
             case "html" -> htmlPreviewHint(code);
-            case "java" -> runJava(code);
-            case "javascript", "js" -> runJavaScript(code);
-            case "python", "py" -> runScript(code, "python", ".py");
-            default -> throw new BusinessException("暂不支持运行该语言: " + lang + "，可选 html / java / javascript / python");
+            default -> throw new BusinessException("暂不支持运行该语言: " + lang + "，请使用 HTML 预览或本地运行");
         };
         result.setLanguage(lang);
         result.setDurationMs(System.currentTimeMillis() - start);

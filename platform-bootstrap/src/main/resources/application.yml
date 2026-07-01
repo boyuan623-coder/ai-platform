@@ -2,15 +2,20 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:classpath:application-secrets.yml
   application:
     name: code-craftsman
+  autoconfigure:
+    exclude:
+      - dev.langchain4j.community.store.embedding.redis.spring.RedisEmbeddingStoreAutoConfiguration
   threads:
     virtual:
       enabled: true
   datasource:
-    url: jdbc:mysql://localhost:3306/volunteer?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/ai_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: root
+    password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
@@ -47,6 +52,12 @@ mybatis-plus:
       id-type: auto
 
 management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://localhost:9411/api/v2/spans}
   endpoints:
     web:
       exposure:
@@ -63,3 +74,27 @@ logging:
   level:
     com.chatbot: INFO
     dev.langchain4j: WARN
+
+app:
+  storage:
+    base-path: ./data
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+      - http://localhost:8080
+    allow-credentials: true
+  cos:
+    enabled: false
+    endpoint: ${COS_ENDPOINT:}
+    region: ${COS_REGION:ap-guangzhou}
+    bucket: ${COS_BUCKET:}
+    access-key: ${COS_ACCESS_KEY:}
+    secret-key: ${COS_SECRET_KEY:}
+    public-url-prefix: ${COS_PUBLIC_URL:}
+    key-prefix: deploy
+  selenium:
+    enabled: false
+    preview-base-url: http://localhost:8080
+    viewport-width: 800
+    viewport-height: 450

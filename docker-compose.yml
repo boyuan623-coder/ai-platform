@@ -5,26 +5,174 @@ services:
     image: mysql:8.0
     container_name: ai-platform-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: volunteer
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ai_platform
     ports:
       - "3306:3306"
     volumes:
       - ./platform-bootstrap/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ai-platform
 
   redis:
     image: redis:7-alpine
     container_name: ai-platform-redis
     ports:
       - "6379:6379"
+    networks:
+      - ai-platform
 
-  # 可选：Prometheus + Grafana 监控（Phase 2 微服务拆分后启用）
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   ports:
-  #     - "9090:9090"
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   ports:
-  #     - "3000:3000"
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: ai-platform-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ai-platform
+
+  zipkin:
+    image: openzipkin/zipkin:3.4
+    container_name: ai-platform-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - ai-platform
+    profiles:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: ai-platform-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - ai-platform
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: ai-platform-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - ai-platform
+    profiles:
+      - monitoring
+
+  platform-gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.platform-gateway
+    container_name: ai-platform-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    depends_on:
+      nacos:
+        condition: service_healthy
+    networks:
+      - ai-platform
+    profiles:
+      - microservices
+
+  service-user:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service-user
+    container_name: ai-platform-service-user
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      APP_COS_ENABLED: ${COS_ENABLED:-false}
+      APP_COS_ENDPOINT: ${COS_ENDPOINT:-}
+      APP_COS_BUCKET: ${COS_BUCKET:-}
+      APP_COS_ACCESS_KEY: ${COS_ACCESS_KEY:-}
+      APP_COS_SECRET_KEY: ${COS_SECRET_KEY:-}
+      APP_COS_PUBLIC_URL_PREFIX: ${COS_PUBLIC_URL:-}
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - ai-platform
+    profiles:
+      - microservices
+
+  service-appointment:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service-appointment
+    container_name: ai-platform-service-appointment
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      service-user:
+        condition: service_started
+    networks:
+      - ai-platform
+    profiles:
+      - microservices
+
+  service-codegen:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service-codegen
+    container_name: ai-platform-service-codegen
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    depends_on:
+      nacos:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      service-user:
+        condition: service_started
+    networks:
+      - ai-platform
+    profiles:
+      - microservices
+
+networks:
+  ai-platform:
+    driver: bridge

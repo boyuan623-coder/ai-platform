@@ -2,8 +2,9 @@ export async function parseSseStream(
   url: string,
   onData: (data: string) => void,
   signal?: AbortSignal,
+  headers?: Record<string, string>,
 ): Promise<void> {
-  const res = await fetch(url, { signal })
+  const res = await fetch(url, { signal, headers })
   if (!res.ok) {
     throw new Error(`请求失败 (${res.status})`)
   }
